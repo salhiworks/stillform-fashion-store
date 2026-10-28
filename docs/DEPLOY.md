@@ -1,6 +1,6 @@
 # Deploying STILLFORM
 
-Both kinds of site are static: the build output can go on any static host. Single-page routing is already configured: `public/_redirects` for Netlify and Cloudflare Pages, `vercel.json` for Vercel.
+Both kinds of site are static: the build output can go on any static host. Single-page routing is already configured: `public/_redirects` for Netlify and Cloudflare Pages, `vercel.json` for Vercel, and `public/.htaccess` for Apache and LiteSpeed hosts such as Hostinger.
 
 | | Your store | The showroom (live demo) |
 | --- | --- | --- |
@@ -70,3 +70,44 @@ Never add the Turnstile secret key, the Supabase secret key or the `service_role
 1. Open the site, put a piece in the bag and open checkout. The Turnstile check should be invisible, or show a single tick box.
 2. If checkout is open, place one order with your own details, then cancel it in the dashboard.
 3. Sign in at `/admin` on your store (not the demo).
+
+## Hostinger
+
+### Recommended: a Node.js Web App imported from GitHub
+
+Hostinger builds the site from your GitHub repository and redeploys it on every push. You need a plan with Node.js Web Apps, such as Business web hosting or Cloud.
+
+1. **Create the app.** In hPanel, add a Node.js Web App and choose to import from GitHub. A popup asks you to install the Hostinger GitHub App; give it access to your store's repository.
+2. **Review the build settings.** Hostinger detects Vite and pre-fills them. Check them against this table:
+
+   | Setting | Your store | The showroom |
+   | --- | --- | --- |
+   | Framework | Vite | Vite |
+   | Build script | `build` | `build:demo` |
+   | Output directory | `dist` | `dist` |
+   | Entry file | empty (a static site, no server) | empty |
+   | Node.js version | 22 | 22 |
+
+3. **Environment variables, before the first build (your store only).** Add `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` and `VITE_TURNSTILE_SITE_KEY`, with the same values as in `.env.local`. Hostinger passes them into the build. Saving them later redeploys the site, which is what bakes new values in. The showroom needs no variables.
+4. **Deploy.** Before the first deploy, run `npm run preflight` (or `npm run preflight -- --demo`) on your computer. After that, every push to the connected branch rebuilds the site.
+5. **Domain, SSL and services.** Connect your domain and turn on SSL in hPanel. For your store, also update Supabase as in "Supabase settings for the domain" above, and add the domain to your Turnstile widget's hostnames.
+6. **Check direct links once.** Hostinger publishes the build to `public_html` and manages an `.htaccess` file there itself; its documentation doesn't say how it handles paths that only exist in the app. The build includes this project's own `.htaccess`, which sends such paths to the app.
+
+   After the first deploy:
+   - open a product page directly (e.g. `/products/heavyweight-tee`) and refresh it
+   - if Hostinger shows a 404, use the alternative below, where this project's `.htaccess` always applies
+
+### Alternative: upload the built files
+
+This works on every Hostinger web hosting plan, but you upload again after each change.
+
+1. Put your store's three values in `.env.production.local`; the showroom needs none.
+2. Check and build:
+
+   ```bash
+   npm run preflight && npm run build                 # your store
+   npm run preflight -- --demo && npm run build:demo  # or the showroom
+   ```
+
+3. In hPanel, open **Files → File Manager → public_html**. Turn on **Show hidden files** and remove the placeholder `default.php` if there is one. Then upload everything inside `dist/`, including `.htaccess`, which makes direct links and refreshes work.
+4. Turn on SSL, and point Supabase and Turnstile at the domain as above.

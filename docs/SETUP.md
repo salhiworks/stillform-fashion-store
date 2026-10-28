@@ -8,7 +8,20 @@ About twenty minutes from a fresh download to a working store you can manage. Yo
 
 You never edit code to manage products.
 
-**Using Claude Code?** You can ask it to do each step below, for example "Link my Supabase project `abcd…` and set up the database." It runs the Supabase CLI with your own login. Never paste a secret key, a service-role key or a password into the chat. When a step needs a secret, type it yourself in the terminal.
+**Using Claude Code?** Claude can do most of the setup for you with the Supabase CLI, signed in as you:
+- linking the project
+- applying the database and demo collection
+- writing `.env.local`
+- deploying the checkout function
+- making your account an administrator
+- running the checks
+
+Three things are yours to do, because they need your browser or a secret:
+1. **Sign in to Supabase.** Run `npx supabase login` in your own terminal; it opens your browser.
+2. **Create the free accounts:** a Supabase project and a Cloudflare Turnstile widget (step 4).
+3. **Enter your secrets.** Run `npm run setup` in your own terminal, not through Claude: it asks for your Turnstile secret key and your owner password in hidden prompts, and skips everything Claude already did.
+
+Never paste a secret key or password into the chat, or into a `!` command, which shares it with Claude.
 
 ## The quick way
 

@@ -4,11 +4,11 @@ import { Wordmark } from "@/components/Wordmark";
 /** Shown at /admin while the store runs in demo mode. */
 export default function SetupPage() {
   const steps = [
-    ["Create a Supabase project", "Free tier is enough. Note the project URL and the anon (publishable) key under Project Settings → API."],
-    ["Set up the database", "Open the SQL editor, paste supabase/setup.sql and run it. It creates the tables, security rules, storage bucket and the demo collection."],
-    ["Add your keys", "Copy .env.example to .env.local and fill in VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY. Restart npm run dev."],
-    ["Create your account", "In Authentication → Users, add a user with your email and a password. Turn off public sign-ups."],
-    ["Make yourself an administrator", "Run the one-line SQL from docs/SETUP.md with your email. Then sign in here."],
+    ["Create a Supabase project", "Free tier is enough. Note its project ref, the part before .supabase.co in the project URL."],
+    ["Create a Turnstile widget", "In Cloudflare, Turnstile → Add widget, with your domain and localhost. It protects checkout from bots and is free."],
+    ["Run the guided setup", "In a terminal: npx supabase login, then npm run setup. It sets up the database and demo collection, your keys, checkout protection and your owner account."],
+    ["Turn off public sign-ups", "The setup links you to the right page in Supabase and checks it for you."],
+    ["Restart and sign in", "Restart npm run dev, then sign in here with the email and password you chose."],
   ];
   return (
     <div className="min-h-svh bg-plaster px-6 py-16">
@@ -18,7 +18,7 @@ export default function SetupPage() {
           <p className="label text-muted-foreground">Studio</p>
           <h1 className="type-wide text-[clamp(2rem,4vw,3rem)] font-extralight leading-tight">Connect your store to open the dashboard.</h1>
           <p className="text-[15px] leading-relaxed text-muted-foreground">
-            The storefront is running on its demo collection. The dashboard needs a Supabase project to save products, photos and orders. It takes about ten minutes.
+            The storefront is running on its demo collection. The dashboard needs a Supabase project to save products, photos and orders. It takes about twenty minutes.
           </p>
         </div>
         <ol className="flex flex-col divide-y divide-ink/10 border-y border-ink/10">
