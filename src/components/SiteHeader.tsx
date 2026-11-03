@@ -55,9 +55,16 @@ export function SiteHeader() {
           <Wordmark name={catalog.settings.name} />
         </Link>
 
-        <button type="button" onClick={() => bag.setOpen(true)} className="label link-draw justify-self-end py-1" aria-label={`Bag, ${bag.count} ${bag.count === 1 ? "item" : "items"}`}>
-          Bag <span className="tabular ml-1 inline-block min-w-[1ch]">{bag.count}</span>
-        </button>
+        <div className="flex items-center gap-5 justify-self-end lg:gap-8">
+          {__DEMO_DASHBOARD__ && (
+            <Link to="/demo/admin" className="label link-draw hidden whitespace-nowrap py-1 md:inline-block">
+              View Demo Dashboard
+            </Link>
+          )}
+          <button type="button" onClick={() => bag.setOpen(true)} className="label link-draw py-1" aria-label={`Bag, ${bag.count} ${bag.count === 1 ? "item" : "items"}`}>
+            Bag <span className="tabular ml-1 inline-block min-w-[1ch]">{bag.count}</span>
+          </button>
+        </div>
       </div>
 
       <div
@@ -89,6 +96,16 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          {__DEMO_DASHBOARD__ && (
+            <Link
+              to="/demo/admin"
+              onClick={() => setMenuOpen(false)}
+              className={`type-wide border-b border-border py-5 text-[2rem] font-extralight tracking-[-0.01em] transition-[opacity,translate] duration-700 ease-(--ease-settle) motion-reduce:transition-none ${menuOpen ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}
+              style={{ transitionDelay: menuOpen ? `${120 + NAV.length * 60}ms` : "0ms" }}
+            >
+              View Demo Dashboard
+            </Link>
+          )}
         </nav>
         <p className="mt-auto pb-8 text-[13px] text-muted-foreground">{catalog.settings.rail.eyebrow}</p>
       </div>

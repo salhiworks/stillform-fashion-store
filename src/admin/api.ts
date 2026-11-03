@@ -1,5 +1,11 @@
 import type { Catalog, MediaAsset } from "@/catalog/types";
-import { BackendError, call, MEDIA_BUCKET, supabase } from "@/lib/supabase";
+import { BackendError, call as backendCall, MEDIA_BUCKET, supabase } from "@/lib/supabase";
+
+// In the showroom build (__DEMO_DASHBOARD__) the same calls run against the
+// browser-local demo instead of Supabase. The flag is a build-time constant, so
+// other builds drop the demo branch and never bundle it.
+const call = <T,>(fn: string, args?: Record<string, unknown>): Promise<T> =>
+  __DEMO_DASHBOARD__ ? import("@/demo/rpc").then((m) => m.demoCall<T>(fn, args)) : backendCall<T>(fn, args);
 
 // Typed access to the admin functions in supabase/migrations/…_admin_api.sql.
 
@@ -74,6 +80,16 @@ export const api = {
 
 /** Uploads a file to the media bucket under a random name and returns its public URL. */
 export async function uploadFile(folder: "rail" | "editorial", blob: Blob, extension: string): Promise<{ path: string; url: string }> {
+  if (__DEMO_DASHBOARD__) {
+    // Demo "uploads" stay in this browser as data URLs.
+    const url = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(new BackendError({ message: "upload_failed" }));
+      reader.readAsDataURL(blob);
+    });
+    return { path: `${folder}/${crypto.randomUUID()}.${extension}`, url };
+  }
   if (!supabase) throw new BackendError({ message: "backend_not_configured" });
   const path = `${folder}/${crypto.randomUUID()}.${extension}`;
   const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(path, await blob.arrayBuffer(), {
@@ -87,6 +103,7 @@ export async function uploadFile(folder: "rail" | "editorial", blob: Blob, exten
 }
 
 export async function removeFiles(paths: string[]) {
+  if (__DEMO_DASHBOARD__) return;
   if (!supabase || paths.length === 0) return;
   await supabase.storage.from(MEDIA_BUCKET).remove(paths);
 }

@@ -4,7 +4,7 @@ Both kinds of site are static: the build output can go on any static host. Singl
 
 | | Your store | The showroom (live demo) |
 | --- | --- | --- |
-| **What it is** | A real shop: your catalogue in Supabase, checkout, the Studio at `/admin` | The full storefront, rail, lookbook, product pages and bag on the built-in collection. Checkout shows "This is a preview of the store." and there is no Studio |
+| **What it is** | A real shop: your catalogue in Supabase, checkout, the Studio at `/admin` | The full storefront, rail, lookbook, product pages and bag on the built-in collection. Checkout shows "This is a preview of the store." and there is no real Studio: the Demo Studio at `/demo/admin` is a simulation on fictional, browser-local data |
 | **Build command** | `npm run build` | `npm run build:demo` |
 | **Output directory** | `dist` | `dist` |
 | **Environment variables** | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_TURNSTILE_SITE_KEY` | None |
@@ -15,11 +15,11 @@ Both kinds of site are static: the build output can go on any static host. Singl
 
 `npm run build:demo` builds the store on its built-in 8-piece collection and the images in `public/media`.
 
-It's backend-free by construction: it reads no `.env` files and blanks every Supabase and Turnstile setting. So it can't connect to a database or take an order, even if such values are on the host by mistake. It also leaves the Studio out entirely, with no dashboard code in the bundle; `/admin` shows "not found". The bag works and is kept in the visitor's browser.
+It's backend-free by construction: it reads no `.env` files and blanks every Supabase and Turnstile setting. So it can't connect to a database or take an order, even if such values are on the host by mistake. It leaves the real Studio out: `/admin` shows "not found", with no sign-in and no database calls. In its place the showroom carries the Demo Studio at `/demo/admin`: the same dashboard pages over fictional data kept in the visitor's browser (a **Reset demo** button restores it), which also drives the demo storefront. Nothing is sent anywhere. The bag works and is kept in the visitor's browser.
 
 1. Run `npm run preflight -- --demo`. It builds the showroom and checks that the build contains:
    - no Supabase project, key or Turnstile key
-   - no Studio
+   - no real Studio sign-in, and the Demo Studio present
    - every image
    - routing for the host
 2. On the host, create a site from the repository with build command `npm run build:demo` and output directory `dist`. Add no environment variables.

@@ -35,7 +35,9 @@ async function demo() {
     const js = readdirSync(join(out, "assets")).filter((f) => f.endsWith(".js")).map((f) => readFileSync(join(out, "assets", f), "utf8")).join("\n");
     check("no Supabase project, key or token in the build", !/[a-z0-9]{20}\.supabase\.co|sb_(publishable|secret)_|eyJ[A-Za-z0-9_-]{15,}\.eyJ/.test(js), "Build with npm run build:demo, which ignores backend settings.");
     check("no Turnstile key in the build", !/0x4AAAA|[0-9]x0{20}[A-F]{2}/.test(js));
-    check("the Studio dashboard is left out", !js.includes("admin_catalog") && !readdirSync(join(out, "assets")).some((f) => /admin/i.test(f)));
+    // The showroom carries the simulated Demo Studio (/demo/admin), never the real sign-in.
+    check("the real Studio's sign-in is left out", !js.includes("That email and password don’t match an account") && !js.includes("an administrator"), "The showroom must not include the real /admin.");
+    check("the Demo Studio runs on browser-local data", js.includes("stillform:demo-studio"));
     const media = [...new Set(js.match(/\/media\/[A-Za-z0-9/_.-]+\.(webp|png|jpe?g|avif)/g) ?? [])];
     const missing = media.filter((m) => !existsSync(join(out, m)));
     check(`all ${media.length} images the collection uses are in the build`, media.length > 0 && missing.length === 0, missing.slice(0, 3).join(", "));

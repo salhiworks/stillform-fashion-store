@@ -37,6 +37,12 @@ if (studioEnabled) {
   routes.unshift({ path: "admin/*", lazy: async () => ({ Component: (await import("./admin/AdminApp")).default }) });
 }
 
+// The showroom's simulated dashboard: fictional, browser-local data, no login
+// and no backend. Only the demo build has it; /admin stays the real Studio.
+if (__DEMO_DASHBOARD__) {
+  routes.unshift({ path: "demo/admin/*", lazy: async () => ({ Component: (await import("./demo/DemoAdminApp")).default }) });
+}
+
 // The untouched original component and demo, kept for side-by-side comparison
 // while developing. Not included in production builds.
 if (import.meta.env.DEV) {

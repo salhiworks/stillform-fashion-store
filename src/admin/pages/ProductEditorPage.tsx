@@ -11,6 +11,7 @@ import { garmentFor, mediaSrc, railGarments, slugify } from "../garments";
 import type { Placement } from "../images";
 import { Badge, Button, Field, Input, Notice, PageHeader, Panel, Select, Textarea, Toggle, useConfirm, useToast } from "../ui";
 import { STATUS_LABEL, STATUS_TONE } from "../format";
+import { ADMIN_BASE } from "@/admin/paths";
 
 type Status = Product["status"];
 type Role = "front" | "back" | "side";
@@ -233,7 +234,7 @@ function ProductEditorPage({ id }: { id: string | undefined }) {
       if (draft.isNew) {
         leaving.current = true;
         setSaved(draft);
-        navigate(`/admin/products/${result.id}`, { replace: true });
+        navigate(`${ADMIN_BASE}/products/${result.id}`, { replace: true });
       }
     } catch (error) {
       toast(describeError(error), "negative");
@@ -253,7 +254,7 @@ function ProductEditorPage({ id }: { id: string | undefined }) {
   }
 
   if (id && !product && !freshProduct) {
-    return <PageHeader title="Product not found" description="It may have been deleted." back={{ to: "/admin/products", label: "Products" }} />;
+    return <PageHeader title="Product not found" description="It may have been deleted." back={{ to: `${ADMIN_BASE}/products`, label: "Products" }} />;
   }
 
   const remove = async () => {
@@ -264,7 +265,7 @@ function ProductEditorPage({ id }: { id: string | undefined }) {
       leaving.current = true;
       await refresh();
       toast("Product deleted.");
-      navigate("/admin/products", { replace: true });
+      navigate(`${ADMIN_BASE}/products`, { replace: true });
     } catch (error) {
       toast(describeError(error), "negative");
     }
@@ -301,7 +302,7 @@ function ProductEditorPage({ id }: { id: string | undefined }) {
   return (
     <div className="pb-24">
       <PageHeader
-        back={{ to: "/admin/products", label: "Products" }}
+        back={{ to: `${ADMIN_BASE}/products`, label: "Products" }}
         title={
           <span className="flex items-center gap-3">
             {draft.name || "New product"}

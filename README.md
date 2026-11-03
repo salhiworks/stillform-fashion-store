@@ -34,6 +34,7 @@ npm run dev          # http://localhost:5173
 | `npm run test:db` | Database tests: migrations, security rules and checkout against a real Postgres 17 |
 | `npm run test:e2e` | Browser tests: storefront (demo mode) plus dashboard and checkout against a local test backend. Run `npx playwright install chromium` once first |
 | `npm run db:build` | Regenerate `supabase/seed.sql` and `supabase/setup.sql` from the demo catalogue and migrations |
+| `npm run test:demo` | The Demo Studio at `/demo/admin` in the production showroom build, on desktop and a phone: edits reach the store, Reset Demo, no backend requests |
 | `npm run test:showroom` | The production showroom build in a browser: every route, direct links, the bag, no checkout, no Studio, no backend requests |
 | `npm run test:permissions` | Exact database grants, checked on a strict and a legacy Supabase project |
 
@@ -48,6 +49,7 @@ In development, `/lab/original-rail` renders the untouched original component an
 - `/products/:slug` — product page; `?colour=black` selects a colourway
 - `/checkout`, `/order/:reference` — checkout and confirmation (open only with a configured backend)
 - `/info` — shipping, returns and contact, from the store settings
+- `/demo/admin` — the Demo Studio, only in the showroom build (`build:demo`): the real dashboard over fictional, browser-local data, no login and no backend. Edits to products, prices, stock, the rail, collections, the lookbook, orders and settings show in the demo store; **Reset demo** restores the original. Code in `src/demo/`; the production build never includes it
 - `/admin` — the dashboard (sign-in required; administrators only). Left out of the showroom build, and of any build with `VITE_STUDIO_ENABLED=false`
 - The bag is a drawer available everywhere
 

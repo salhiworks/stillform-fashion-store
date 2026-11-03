@@ -36,12 +36,18 @@ const SHOWROOM = {
   "import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY": '""',
   "import.meta.env.VITE_TURNSTILE_SITE_KEY": '""',
   "import.meta.env.VITE_STUDIO_ENABLED": '"false"',
+  // The simulated Studio at /demo/admin exists only in this build.
+  __DEMO_DASHBOARD__: "true",
 };
+
+// Every other build and the dev server fold the demo away: the flag is
+// replaced by a literal, so the demo's code is dead and never bundled.
+const NO_DEMO = { __DEMO_DASHBOARD__: "false" };
 
 export default defineConfig(({ mode }) => ({
   plugins: [react(), tailwindcss(), launchGuard()],
   envDir: mode === "demo" ? false : undefined,
-  define: mode === "demo" ? SHOWROOM : undefined,
+  define: mode === "demo" ? SHOWROOM : NO_DEMO,
   // Lets two dev servers (demo and live-backend tests) run side by side.
   cacheDir: process.env.VITE_CACHE_DIR ?? "node_modules/.vite",
   test: { include: ["src/**/*.test.ts"] },

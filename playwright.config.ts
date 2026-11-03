@@ -32,7 +32,7 @@ export default defineConfig({
     },
   ],
   projects: [
-    { name: "desktop", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 }, baseURL: "http://localhost:4317" }, testIgnore: [/mobile/, /live\//, /showroom/] },
+    { name: "desktop", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 }, baseURL: "http://localhost:4317" }, testIgnore: [/mobile/, /live\//, /showroom/, /demo-dashboard/] },
     { name: "mobile", use: { ...devices["Pixel 7"], baseURL: "http://localhost:4317" }, testMatch: /mobile\.spec/ },
     { name: "live", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 }, baseURL: LIVE }, testMatch: /live\/.*\.spec/, fullyParallel: false },
   ],

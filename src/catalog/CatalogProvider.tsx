@@ -1,5 +1,6 @@
 import * as React from "react";
 import { backendConfigured, call } from "@/lib/supabase";
+import { demoStore } from "@/demo/store";
 import { localCatalog } from "./local";
 import type { Catalog } from "./types";
 
@@ -20,11 +21,22 @@ interface CatalogState {
 
 const CatalogContext = React.createContext<CatalogState | null>(null);
 
+const noSubscribe = () => () => undefined;
+const noSnapshot = () => null;
+
 const fetchCatalog = () => call<Catalog>("storefront_catalog");
 
 export function CatalogProvider({ children, catalog: fixed }: { children: React.ReactNode; catalog?: Catalog }) {
   const live = !fixed && backendConfigured;
-  const [catalog, setCatalog] = React.useState<Catalog | null>(fixed ?? (live ? null : localCatalog));
+  // The showroom's catalogue is the browser-local demo, so edits made in the
+  // Demo Studio show up in the store. Other builds never take this branch.
+  const demo = __DEMO_DASHBOARD__ && !fixed;
+  const demoCatalog = React.useSyncExternalStore(
+    demo ? demoStore.subscribe : noSubscribe,
+    demo ? demoStore.storefront : noSnapshot,
+  );
+  const [stored, setCatalog] = React.useState<Catalog | null>(fixed ?? (live ? null : localCatalog));
+  const catalog = demo ? demoCatalog : stored;
   const [failed, setFailed] = React.useState(false);
 
   const reload = React.useCallback(async () => {

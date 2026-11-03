@@ -18,6 +18,7 @@ import RailPage from "./pages/RailPage";
 import SettingsPage from "./pages/SettingsPage";
 import SetupPage from "./pages/SetupPage";
 import { Button, FeedbackProvider, Skeleton } from "./ui";
+import { ADMIN_BASE } from "@/admin/paths";
 
 // ---------------------------------------------------------------------------
 // Session: signed in with Supabase Auth AND listed in public.admins. The second
@@ -64,7 +65,7 @@ export function useAdminData(): AdminData {
   return value;
 }
 
-function AdminDataProvider({ children }: { children: React.ReactNode }) {
+export function AdminDataProvider({ children }: { children: React.ReactNode }) {
   const { reload } = useCatalogState();
   const [data, setData] = React.useState<AdminCatalog | null>(null);
   const [error, setError] = React.useState<string | null>(null);
@@ -98,16 +99,16 @@ function AdminDataProvider({ children }: { children: React.ReactNode }) {
 // ---------------------------------------------------------------------------
 
 const NAV = [
-  { to: "/admin", label: "Overview", end: true },
-  { to: "/admin/products", label: "Products" },
-  { to: "/admin/rail", label: "Rail" },
-  { to: "/admin/collections", label: "Collections" },
-  { to: "/admin/lookbook", label: "Lookbook" },
-  { to: "/admin/orders", label: "Orders" },
-  { to: "/admin/settings", label: "Settings" },
+  { to: `${ADMIN_BASE}`, label: "Overview", end: true },
+  { to: `${ADMIN_BASE}/products`, label: "Products" },
+  { to: `${ADMIN_BASE}/rail`, label: "Rail" },
+  { to: `${ADMIN_BASE}/collections`, label: "Collections" },
+  { to: `${ADMIN_BASE}/lookbook`, label: "Lookbook" },
+  { to: `${ADMIN_BASE}/orders`, label: "Orders" },
+  { to: `${ADMIN_BASE}/settings`, label: "Settings" },
 ];
 
-function Shell({ email, children }: { email: string; children: React.ReactNode }) {
+export function Shell({ email, children, account, banner }: { email: string; children: React.ReactNode; account?: React.ReactNode; banner?: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
   const location = useLocation();
   const [lastPath, setLastPath] = React.useState(location.pathname);
@@ -133,13 +134,13 @@ function Shell({ email, children }: { email: string; children: React.ReactNode }
     <div className="flex flex-col gap-3 border-t border-ink/10 pt-4 text-[13px]">
       <Link to="/" target="_blank" className="text-ink/70 hover:text-ink">View store ↗</Link>
       <p className="truncate text-muted-foreground" title={email}>{email}</p>
-      <button type="button" onClick={() => supabase?.auth.signOut()} className="self-start text-ink/70 hover:text-ink">Sign out</button>
+      {account ?? <button type="button" onClick={() => supabase?.auth.signOut()} className="self-start text-ink/70 hover:text-ink">Sign out</button>}
     </div>
   );
   return (
     <div className="min-h-svh bg-plaster text-ink md:grid md:grid-cols-[232px_minmax(0,1fr)]">
       <aside className="tone-bone sticky top-0 hidden h-svh flex-col gap-8 px-4 py-6 md:flex">
-        <Link to="/admin" className="px-3 text-[12px]">
+        <Link to={`${ADMIN_BASE}`} className="px-3 text-[12px]">
           <Wordmark name="STILLFORM" />
           <span className="label mt-1 block text-muted-foreground">Studio</span>
         </Link>
@@ -147,7 +148,7 @@ function Shell({ email, children }: { email: string; children: React.ReactNode }
         <div className="mt-auto px-3">{footer}</div>
       </aside>
       <div className="tone-bone sticky top-0 z-30 flex h-14 items-center justify-between px-4 md:hidden">
-        <Link to="/admin" className="text-[12px]"><Wordmark name="STILLFORM" /></Link>
+        <Link to={`${ADMIN_BASE}`} className="text-[12px]"><Wordmark name="STILLFORM" /></Link>
         <button type="button" className="label" aria-expanded={open} onClick={() => setOpen((o) => !o)}>{open ? "Close" : "Menu"}</button>
       </div>
       {open && (
@@ -156,8 +157,29 @@ function Shell({ email, children }: { email: string; children: React.ReactNode }
           {footer}
         </div>
       )}
-      <main className="min-w-0 px-4 py-6 sm:px-6 md:px-10 md:py-10">{children}</main>
+      <main className="min-w-0 px-4 py-6 sm:px-6 md:px-10 md:py-10">
+        {banner}
+        {children}
+      </main>
     </div>
+  );
+}
+
+export function AdminRoutes() {
+  return (
+    <Routes>
+      <Route index element={<OverviewPage />} />
+      <Route path="products" element={<ProductsPage />} />
+      <Route path="products/new" element={<ProductEditorPage />} />
+      <Route path="products/:id" element={<ProductEditorPage />} />
+      <Route path="rail" element={<RailPage />} />
+      <Route path="collections" element={<CollectionsPage />} />
+      <Route path="lookbook" element={<LookbookPage />} />
+      <Route path="orders" element={<OrdersPage />} />
+      <Route path="orders/:reference" element={<OrderPage />} />
+      <Route path="settings" element={<SettingsPage />} />
+      <Route path="*" element={<Navigate to={`${ADMIN_BASE}`} replace />} />
+    </Routes>
   );
 }
 
@@ -189,19 +211,7 @@ export default function AdminApp() {
     <FeedbackProvider>
       <AdminDataProvider>
         <Shell email={session.session.user.email ?? ""}>
-          <Routes>
-            <Route index element={<OverviewPage />} />
-            <Route path="products" element={<ProductsPage />} />
-            <Route path="products/new" element={<ProductEditorPage />} />
-            <Route path="products/:id" element={<ProductEditorPage />} />
-            <Route path="rail" element={<RailPage />} />
-            <Route path="collections" element={<CollectionsPage />} />
-            <Route path="lookbook" element={<LookbookPage />} />
-            <Route path="orders" element={<OrdersPage />} />
-            <Route path="orders/:reference" element={<OrderPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="*" element={<Navigate to="/admin" replace />} />
-          </Routes>
+          <AdminRoutes />
         </Shell>
       </AdminDataProvider>
     </FeedbackProvider>

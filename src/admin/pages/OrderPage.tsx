@@ -5,6 +5,7 @@ import { useAdminData } from "../AdminApp";
 import { api, describeError, type OrderDetail, type OrderStatus, type PaymentStatus } from "../api";
 import { Badge, Button, Notice, PageHeader, Panel, Skeleton, Textarea, useConfirm, useToast } from "../ui";
 import { STATUS_LABEL, STATUS_TONE, formatDate, money } from "../format";
+import { ADMIN_BASE } from "@/admin/paths";
 
 // The next steps an order can take; the database enforces the same rules.
 const NEXT: Record<OrderStatus, { status: OrderStatus; label: string }[]> = {
@@ -40,7 +41,7 @@ export default function OrderPage() {
     api.order(reference).then(setOrder, (e) => setError(describeError(e)));
   }, [reference]);
 
-  if (error) return <PageHeader title="Order not found" description={error} back={{ to: "/admin/orders", label: "Orders" }} />;
+  if (error) return <PageHeader title="Order not found" description={error} back={{ to: `${ADMIN_BASE}/orders`, label: "Orders" }} />;
   if (!order) return <Skeleton className="h-96 w-full" />;
 
   const fmt = (minor: number) => money(minor, order.currency, data.settings.locale);
@@ -65,7 +66,7 @@ export default function OrderPage() {
   return (
     <>
       <PageHeader
-        back={{ to: "/admin/orders", label: "Orders" }}
+        back={{ to: `${ADMIN_BASE}/orders`, label: "Orders" }}
         title={<span className="tabular">{order.reference}</span>}
         description={`Placed ${formatDate(order.createdAt, data.settings.locale)} · ${pieces} ${pieces === 1 ? "piece" : "pieces"} · ${fmt(order.total)}`}
         actions={

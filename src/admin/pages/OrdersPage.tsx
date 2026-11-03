@@ -5,6 +5,7 @@ import { useAdminData } from "../AdminApp";
 import { api, describeError, type OrderSummary } from "../api";
 import { Badge, Button, EmptyState, Input, Notice, PageHeader, Skeleton } from "../ui";
 import { STATUS_LABEL, STATUS_TONE, formatDate, money } from "../format";
+import { ADMIN_BASE } from "@/admin/paths";
 
 const TABS = [
   { value: null, label: "All" },
@@ -80,7 +81,7 @@ export default function OrdersPage() {
               <tbody className="divide-y divide-ink/[0.07]">
                 {result.orders.map((order) => (
                   <tr key={order.id} className="hover:bg-ink/[0.025]">
-                    <td className="px-5 py-3"><Link to={`/admin/orders/${order.reference}`} className="tabular font-medium underline-offset-4 hover:underline">{order.reference}</Link></td>
+                    <td className="px-5 py-3"><Link to={`${ADMIN_BASE}/orders/${order.reference}`} className="tabular font-medium underline-offset-4 hover:underline">{order.reference}</Link></td>
                     <td className="px-3 py-3 text-muted-foreground">{formatDate(order.createdAt, data.settings.locale)}</td>
                     <td className="px-3 py-3">{order.name}<span className="block text-[12px] text-muted-foreground">{order.itemCount} {order.itemCount === 1 ? "piece" : "pieces"} · {order.paymentMethodLabel}</span></td>
                     <td className="px-3 py-3"><Badge tone={STATUS_TONE[order.status]}>{STATUS_LABEL[order.status]}</Badge></td>

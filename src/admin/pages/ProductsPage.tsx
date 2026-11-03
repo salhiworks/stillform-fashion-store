@@ -5,6 +5,7 @@ import { useAdminData } from "../AdminApp";
 import { mediaSrc, totalStock } from "../garments";
 import { Badge, ButtonLink, EmptyState, Input, PageHeader } from "../ui";
 import { STATUS_LABEL, STATUS_TONE, money } from "../format";
+import { ADMIN_BASE } from "@/admin/paths";
 
 const FILTERS = [
   { value: null, label: "All" },
@@ -27,7 +28,7 @@ export default function ProductsPage() {
 
   return (
     <>
-      <PageHeader title="Products" description="Everything in the store. Live pieces are visible to customers; drafts are only visible here." actions={<ButtonLink to="/admin/products/new" variant="primary">Add a product</ButtonLink>} />
+      <PageHeader title="Products" description="Everything in the store. Live pieces are visible to customers; drafts are only visible here." actions={<ButtonLink to={`${ADMIN_BASE}/products/new`} variant="primary">Add a product</ButtonLink>} />
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div role="group" aria-label="Filter by status" className="flex flex-wrap gap-1">
           {FILTERS.map((filter) => {
@@ -44,7 +45,7 @@ export default function ProductsPage() {
       </div>
 
       {data.products.length === 0 ? (
-        <EmptyState title="No products yet." action={<ButtonLink to="/admin/products/new" variant="primary">Add your first product</ButtonLink>}>
+        <EmptyState title="No products yet." action={<ButtonLink to={`${ADMIN_BASE}/products/new`} variant="primary">Add your first product</ButtonLink>}>
           Start with one piece: a name, a price, sizes and a front photo are all it takes.
         </EmptyState>
       ) : products.length === 0 ? (
@@ -58,7 +59,7 @@ export default function ProductsPage() {
               const thumb = mediaSrc(data.media, product.colorways[0]?.media.front);
               return (
                 <li key={product.id}>
-                  <Link to={`/admin/products/${product.id}`} className="grid grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-4 px-4 py-3 transition-colors hover:bg-ink/[0.025] md:grid-cols-[48px_minmax(0,2fr)_110px_100px_120px_70px] md:px-5">
+                  <Link to={`${ADMIN_BASE}/products/${product.id}`} className="grid grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-4 px-4 py-3 transition-colors hover:bg-ink/[0.025] md:grid-cols-[48px_minmax(0,2fr)_110px_100px_120px_70px] md:px-5">
                     <span className="block aspect-[200/310] w-12 bg-bone">{thumb && <img src={thumb} alt="" className="size-full object-contain object-top" loading="lazy" />}</span>
                     <span className="min-w-0">
                       <span className="block truncate text-[14px] font-medium">{product.name}</span>

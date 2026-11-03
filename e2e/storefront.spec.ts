@@ -137,3 +137,11 @@ test("products without photography show no empty placeholders", async ({ page })
   await expect(page.getByText("Fabric close-up")).toHaveCount(0);
   await expect(page.getByText("Worn photograph")).toHaveCount(0);
 });
+
+test("the showroom's Demo Studio isn't part of a regular build", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: "View Demo Dashboard" })).toHaveCount(0);
+  await page.goto("/demo/admin");
+  await expect(page.getByRole("heading", { name: "This page isn’t on the rail." })).toBeVisible();
+  await expect(page.getByTestId("demo-banner")).toHaveCount(0);
+});
